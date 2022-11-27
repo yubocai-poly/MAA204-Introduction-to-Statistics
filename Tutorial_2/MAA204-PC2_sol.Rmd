@@ -1,0 +1,427 @@
+---
+title: "Introduction to descriptive Statistics with R"
+author: "Kean-Marc Bardet"
+date: ""
+output:
+  html_document: default
+  pdf_document: default
+subtitle: MAA 204 Statistics
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+The aims of this tutorial is a to provide a first overview on the
+objects and commands of the **R** software relative to descriptive
+Statistics.
+
+**R** is a free software of numerical applied mathematics and more
+precisely statistics. It is continuously developed from the more recent
+researches of mathematicians.\
+During the course, we will use **R** and **Rstudio Desktop**. The first
+step is thus to install those two programs. They are freely available
+respectively at <https://cran.r-project.org/> and
+<https://www.rstudio.com/products/rstudio/download3/> for windows, OS X
+and Linux. Be sure to install the latest version of **R** and of the
+free version of **Rstudio Desktop**.
+
+Both the labs will be written with **Rmarkdown** a light markdown
+language in which one mixes code and explanation. This allows to easily
+comment and describe our experiments in the same document than the one
+containing the code. This also helps to be sure that your code is self
+sufficient by requiring the document to *compiles* on its own.
+
+# One-dimensional Statistics
+
+The dataset **iris** is available in **R** and is one of the most famous
+historical dataset. Note that the package **HistData** also contains
+several datasets of historical interests. Packages are the extension of
+**R** that are made available in the easy to use format by its users.
+The first step for you is to install this package. You only have to do
+it once as the packages are stored locally. You can either use the
+*Packages* tab of the lower right panel in **Rstudio** or the command
+line
+
+```{r, eval = FALSE}
+iris
+head(iris)
+str(iris)
+summary(iris)
+```
+
+Interpret all the previous commands. Note that the dataset is organized
+in a table, called a *dataframe* in **R**, in which each column may have
+a different type. The different variables of the *dataframe* are
+available in the following way:
+
+```{r names}
+is.data.frame(iris)
+names(iris)
+iris$Sepal.Length
+attach(iris)
+Species
+```
+
+You can have more information by using **help** or using the lower right
+panel in **Rstudio**:
+
+```{r Help, eval = FALSE}
+help(iris)
+dim(iris)
+```
+
+We have thus 150 observation of 5 variables. We begin by studying the
+variable **Species** which is a **factor** giving the three different
+species of iris. It corresponds to a qualitative variable which has
+several modalities. The other type of column you may easily encounter
+are **ordered factor**, **date**, **characters**, which are pretty much
+self explaining.
+
+```{r Pie}
+mytable <- table(Species)
+mytable
+barplot(mytable,xlab="Species",ylab="Frequency")
+barplot(prop.table(mytable),xlab="Species",ylab="Frequency")
+round(prop.table(mytable),3)
+pie(mytable)
+```
+
+The usual bar and pie plots are obtained. However, since the
+experimental design is well balanced, the numbers of each species are
+the same. In order to make the differences between the graphs more
+visible, a randomly drawn subsample (as in an urn without replacement)
+is taken and the graphs redrawn:
+
+```{r Pie2}
+Species2=sample(Species,100)
+mytable2=table(Species2)
+pie(mytable2)
+relfreq=round(prop.table(mytable2),3)
+barplot(mytable2,xlab="Species",ylab="Frequency")
+barplot(prop.table(mytable2), xlab="Species",ylab="Relative frequency")
+tab2=paste(names(mytable2)," (", relfreq*100,"%)", sep = "")
+pie(mytable2, labels = tab2)
+```
+
+We can see here the weakness of using a pie chart with which it is very
+difficult to compare the different relative frequencies of the
+modalities. Bar charts are therefore generally preferred.
+
+We are now interested in one of the quantitative variables of the *iris*
+database:
+
+```{r }
+summary(Sepal.Length)
+hist(Sepal.Length,nclass=6)
+hist(Sepal.Length,freq=FALSE,nclass=6)
+hist(Sepal.Length,breaks=c(3,5,6,7,9), freq=FALSE)
+hh=hist(Sepal.Length,breaks=c(3,4,6,7,9), freq=FALSE)
+hh$density
+plot(ecdf(Sepal.Length))
+```
+
+What has been done by his commands? In particular, what does the last
+curve drawn represent and what function can be considered as an
+estimate? Change different parameters of the *hist* command to
+understand what is being done.
+
+Now we consider the different statistics and graphics linked to the
+quantiles of the distribution:
+
+```{r boxplot}
+boxplot(Sepal.Length)
+bb=boxplot(Sepal.Length)
+bb$stats
+quantile(Sepal.Length,c(0.25,0.5,0.75))
+```
+
+The usual empirical moments can also be computed:
+
+```{r Mean}
+m=mean(Sepal.Length)
+m
+n=length(Sepal.Length)
+sum(Sepal.Length)/n
+var(Sepal.Length)
+sd(Sepal.Length)
+(mean((Sepal.Length-m)^2))^0.5
+```
+
+Explain why the two last commands do not provide the same result. Adjust
+the last command for obtaining the same result.
+
+## Exercises
+
+1.  Perform the same statistical analysis for the other three
+    quantitative variables in the database.
+
+```{r }
+summary(Sepal.Width)
+hist(Sepal.Width,nclass=6)
+hist(Sepal.Width,freq=FALSE,nclass=6)
+hist(Sepal.Width,breaks=c(2,4.4), freq=FALSE)
+hh$density
+plot(ecdf(Sepal.Width))
+```
+
+```{r boxplot}
+boxplot(Sepal.Width)
+bb=boxplot(Sepal.Width)
+bb$stats
+quantile(Sepal.Width,c(0.25,0.5,0.75))
+```
+
+```{r Mean}
+m=mean(Sepal.Width)
+m
+n=length(Sepal.Width)
+sum(Sepal.Width)/n
+var(Sepal.Width)
+sd(Sepal.Width)
+(mean((Sepal.Width-m)^2))^0.5
+```
+
+```{r }
+summary(Petal.Width)
+hist(Petal.Width,nclass=6)
+hist(Petal.Width,freq=FALSE,nclass=3)
+hist(Petal.Width,breaks=c(0.1,1,2.5), freq=FALSE)
+hh$density
+plot(ecdf(Petal.Width))
+```
+
+```{r Mean}
+m=mean(Petal.Width)
+m
+n=length(Petal.Width)
+sum(Petal.Width)/n
+var(Petal.Width)
+sd(Petal.Width)
+(mean((Petal.Width-m)^2))^0.5*sqrt(n/(n-1))
+```
+
+```{r boxplot}
+boxplot(Petal.Width)
+bb=boxplot(Petal.Width)
+bb$stats
+quantile(Petal.Width,c(0.25,0.5,0.75))
+```
+
+2.  Perform the statistical analysis of the variable *Sepal.Length*
+    according to the iris variety. What do you notice? Is it the same
+    with the other 3 quantitative variables? Is it possible to recognize
+    the variety of iris according to its size?
+
+```{r }
+summary(Sepal.Length[Species=="setosa"])
+hist(Sepal.Length[Species=="setosa"],nclass=6)
+hist(Sepal.Length[Species=="setosa"],freq=FALSE,nclass=3)
+hist(Sepal.Length[Species=="setosa"],breaks=c(4.3,5.1,5.8), freq=FALSE)
+hh$density
+plot(ecdf(Sepal.Length[Species=="setosa"]))
+```
+
+```{r }
+summary(Sepal.Length[Species=="versicolor"])
+hist(Sepal.Length[Species=="versicolor"],nclass=6)
+hist(Sepal.Length[Species=="versicolor"],freq=FALSE,nclass=3)
+hist(Sepal.Length[Species=="versicolor"],breaks=c(4.9,6,7), freq=FALSE)
+hh$density
+plot(ecdf(Sepal.Length[Species=="versicolor"]))
+```
+
+```{r }
+summary(Sepal.Length[Species=="virginica"])
+hist(Sepal.Length[Species=="virginica"],nclass=6)
+hist(Sepal.Length[Species=="virginica"],freq=FALSE,nclass=3)
+hist(Sepal.Length[Species=="virginica"],breaks=c(4.9,6,7.9), freq=FALSE)
+hh$density
+plot(ecdf(Sepal.Length[Species=="virginica"]))
+```
+
+# Some elements of two-dimensional descriptive Statistics
+
+After downloading the *TEarth.txt* database from **Moodle**, we will
+integrate it using the "*Import dataset*" command in the "*File*" tab of
+**Rstudio**. We will take care to choose "*Heading*" so that the first
+line represents the name of the two variables and not a data of each of
+the variables (which then take the names V1 and V2).
+
+```{r Stat1}
+head(TEarth)
+names(TEarth)
+summary(TEarth)
+```
+
+It is thus the average annual temperatures of the globe each year from
+1880 to 2015. A representation in the form of a scatterplot will
+therefore be relevant to observe the evolution of temperatures.
+
+```{r plot}
+plot(TEarth$Year,TEarth$Temp,'l',col="blue")
+```
+
+We observe globally an increase of the temperature. This can be
+corroborated by calculating the covariance or empirical correlation
+between the two variables:
+
+```{r Covariance}
+cov(TEarth$Year,TEarth$Temp)
+mean((TEarth$Year-mean(TEarth$Year))*(TEarth$Temp-mean(TEarth$Temp)))*136/135
+cor(TEarth$Year,TEarth$Temp)
+cov(TEarth$Year,TEarth$Temp)/(sd(TEarth$Year)*sd(TEarth$Temp))
+mean((TEarth$Year-mean(TEarth$Year))*(TEarth$Temp-mean(TEarth$Temp)))/(mean((TEarth$Year-mean(TEarth$Year))^2)*mean((TEarth$Temp-mean(TEarth$Temp))^2))^0.5
+```
+
+Explain why the last formula provides the same result than the previous
+one.
+
+Now, we will use an important R-command, lm, for obtaining the least
+square regression line:
+
+```{r lm}
+reg1=lm(Temp~Year,data=TEarth)
+reg1$coef
+summary(reg1)
+cor(TEarth$Year,TEarth$Temp)^2
+```
+
+Why do the last computation provide the R-squared coefficient? Compute
+by yourselves the coefficients from their usual formulas. There are
+other statistics (estimators and tests) in the summary that could be
+used but which require advanced results in inferential Statistics...
+
+Now, if we would like to predict for years 2016 to 2022, this could be
+done in the following way:
+
+```{r Predict}
+Year=c(2016:2022)
+New=as.data.frame(Year)
+Pred1=predict.lm(reg1,newdata=New)
+plot(TEarth$Year,TEarth$Temp,'l',col='black',xlim=c(1880,2025),ylim=c(13.3,14.9))
+lines(TEarth$Year,reg1$fit,col='blue')
+lines(Year,Pred1,col='blue')
+```
+
+What do you think about these prediction? Think about other solutions
+for forecasting the temperature.
+
+## Exercises
+
+1.  One method to improve the prediction would be to consider a least
+    squares regression line only on the last years. The question would
+    be to determine from when. A procedure for this would be to
+    determine the modeling of the scatterplot by 2 least squares
+    regression lines that would minimize the total sum of the squared
+    errors. This would give us: $$
+    (\widehat a_1,\widehat b_1,\widehat a_2,\widehat b_2,\widehat t)=\mbox{Arg}\!\min_{\!\!\!\!\!\!\!\!\!2\leq t\leq n-2}~~ \mbox{Arg}\!\!\!\!\!\!\!\!\min_{\!\!\!\!\!(a_1,b_1,a_2,b_2)\in R^4}\sum_{i=1}^t (Y_i-(a_1X_i+b_1))^2 +\sum_{i=t+1}^n (Y_i-(a_2X_i+b_2))^2,
+    $$
+
+```{r}
+# exemple
+t=2013
+T1=subset(TEarth,Year<=t)
+r1=lm(Temp~Year,data=T1)
+r1$coef
+summary(r1)
+T2=subset(TEarth,Year>t)
+r2=lm(Temp~Year,data=T2)
+r2$coef
+summary(r2)
+d1=data.frame(T1, y_hat = fitted(r1), e = residuals(r1))
+d2=data.frame(T2, y_hat = fitted(r2), e = residuals(r2))
+plot(TEarth$Year,TEarth$Temp,'l',col='black',xlim=c(1880,2025),ylim=c(13.3,14.9))
+lines(d1$Year,d1$y_hat,'l',xlim=c(1880,t),ylim=c(13.3,14.9),col='blue')
+lines(d2$Year,d2$y_hat,'l',xlim=c(t+1,2015),ylim=c(13.3,14.9),col='red')
+
+erreur=sum(r1$residuals^2)+sum(r2$residuals^2)
+erreur
+```
+
+```{r}
+mydata
+```
+
+```{r}
+t=c(1880:2013)
+a1=rep(0, 134)
+a2=rep(0, 134)
+b1=rep(0, 134)
+b2=rep(0, 134)
+erreur=rep(0, 134)
+mydata <- data.frame(temps= t, a1= a1, b1=b1, a2=a2, b2=b2,erreur=erreur)
+
+for (i in c(1880:2013)){
+
+T1=subset(TEarth,Year<=i)
+r1=lm(Temp~Year,data=T1)
+r1$coef
+mydata[mydata$temps==i,][2]<-r1$coef[1]
+mydata[mydata$temps==i,][3]<-r1$coef[2]
+T2=subset(TEarth,Year>i)
+r2=lm(Temp~Year,data=T2)
+mydata[mydata$temps==i,][4]<-r2$coef[1]
+mydata[mydata$temps==i,][5]<-r2$coef[2]
+mydata[mydata$temps==i,][6]<-sum(r1$residuals^2)+sum(r2$residuals^2)
+}
+
+
+```
+
+```{r}
+
+mydata[which.min(mydata$erreur),]
+```
+
+```{r}
+t=1963
+T1=subset(TEarth,Year<=t)
+r1=lm(Temp~Year,data=T1)
+r1$coef
+summary(r1)
+T2=subset(TEarth,Year>t)
+r2=lm(Temp~Year,data=T2)
+r2$coef
+summary(r2)
+d1=data.frame(T1, y_hat = fitted(r1), e = residuals(r1))
+d2=data.frame(T2, y_hat = fitted(r2), e = residuals(r2))
+plot(TEarth$Year,TEarth$Temp,'l',col='black',xlim=c(1880,2025),ylim=c(13.3,14.9))
+lines(d1$Year,d1$y_hat,'l',xlim=c(1880,t),ylim=c(13.3,14.9),col='blue')
+lines(d2$Year,d2$y_hat,'l',xlim=c(t+1,2015),ylim=c(13.3,14.9),col='red')
+
+erreur=sum(r1$residuals^2)+sum(r2$residuals^2)
+erreur
+```
+
+    where $X_i$ and $Y_i$ correspond here respectively to the year
+    and the temperature. Explain why $2\leq t \leq n-2$. Can we obtain
+    an explicit formula for $\widehat t$ by derivation? Design a
+    sequence of commands to obtain the estimators
+    $(\widehat a_1,\widehat b_1,\widehat a_2,\widehat b_2,\widehat t)$.
+    In particular, you can use a computer loop "*for"* and the
+    command"*min"*. Use it for forecasting and compare with the previous
+    predictions.
+
+2.  You can also think about finding the closest parabola to the
+    scatterplot by least squares, i.e. solve: $$
+    (\widehat a,\widehat b,\widehat c)=\mbox{Arg}\!\!\!\min_{\!\!\!\!\!(a,b,c)\in R^3}\sum_{i=1}^n (Y_i-(a\,X^2_i+b\, X_i+c))^2,
+    $$
+
+    How could you prove that there exists a unique solution of this
+    minimization problem? A **R**-command for numerically computing the
+    estimators is to use:
+
+    ```{r}
+    reg2=lm(Temp~Year+I(Year^2),data=TEarth)
+    reg2$coefficients
+    Pred2=predict.lm(reg2,newdata=New)
+    plot(TEarth$Year,TEarth$Temp,'l',col='black',xlim=c(1880,2025),ylim=c(13.3,14.9))
+    lines(TEarth$Year,reg1$fit,col='blue')
+    lines(Year,Pred1,col='blue')
+    lines(TEarth$Year,reg2$fit,col='cyan')
+    lines(Year,Pred2,col='cyan')
+    ```
